@@ -3,8 +3,6 @@ import fetchMock from 'jest-fetch-mock';
 
 import { RequestUtil } from '@app/utils/request.util';
 
-import { RequestUtilMock } from '../../__mocks__/utils/request.util.mock';
-
 describe('RequestUtil class', () => {
   beforeAll(() => {
     fetchMock.enableMocks();
@@ -15,7 +13,9 @@ describe('RequestUtil class', () => {
   });
 
   describe('GET method', () => {
-    const { body, url, headers } = RequestUtilMock.github;
+    const url = 'https://api.github.com/users/github';
+    const body = { login: 'github' };
+    const headers = { 'Content-Type': 'application/json' };
 
     it('Valid request', async () => {
       fetchMock.mockResponseOnce(JSON.stringify(body), { headers });
@@ -39,7 +39,11 @@ describe('RequestUtil class', () => {
   });
 
   describe('POST method', () => {
-    const { body, url, headers } = RequestUtilMock.jsonplaceholder;
+    const url = 'https://jsonplaceholder.typicode.com/posts';
+    const body = { userId: 1, title: 'Title', body: 'Body' };
+    const headers = {
+      'Content-Type': 'application/json; charset=UTF-8',
+    };
 
     it('Valid request', async () => {
       fetchMock.mockResponseOnce(JSON.stringify(body), { headers });

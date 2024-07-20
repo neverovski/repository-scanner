@@ -92,7 +92,7 @@
     }
   },
   "lint-staged": {
-    "*.ts": "eslint --cache \"src/**/*.ts\" \"test/**/*.ts\""
+    "*.ts": "eslint --cache \"src/**/*.ts\" \"tests/**/*.ts\""
   },
   "jest-junit": {
     "outputDirectory": "reports",
