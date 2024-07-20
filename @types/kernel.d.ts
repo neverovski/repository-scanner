@@ -1,0 +1,1 @@
+type NameType = string;

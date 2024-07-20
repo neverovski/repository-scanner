@@ -1,0 +1,22 @@
+{
+  "testEnvironment": "node",
+  "transform": {
+    "^.+\\.ts$": "ts-jest"
+  },
+  "bail": 1,
+  "moduleFileExtensions": ["ts", "json", "js", "mjs", "node"],
+  "modulePathIgnorePatterns": [
+    "<rootDir>/dist",
+    "<rootDir>/http",
+    "<rootDir>/docs"
+  ],
+  "testTimeout": 30000,
+  "testMatch": ["<rootDir>/tests/**/*.test.ts"],
+  "coverageDirectory": "coverage",
+  "moduleNameMapper": {
+    "@app/(.*)": "<rootDir>/src/$1"
+  },
+  "globals": {
+    "fetch": "global.fetch"
+  }
+}
