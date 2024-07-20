@@ -25,9 +25,7 @@ Development environment requirements:
 ### 1. Enable Git hooks
 
 ```shell
-  npx husky install
-  npx husky add .husky/commit-msg 'npm run commit-msg'
-  npx husky add .husky/pre-commit 'npm run pre-commit'
+  npx husky init
 ```
 
 ### 2. Why is my git pre-commit hook not executable by default?

@@ -15,7 +15,7 @@
     "lint:fix": "eslint --fix \"src/**/*.ts\" \"tests/**/*.ts\"",
     "commit-msg": "commitlint -e",
     "pre-commit": "npm run lint:staged && npm run test:unit",
-    "prepare": "husky",
+    "prepare": "husky || true",
     "test:e2e": "cross-env NODE_ENV=test jest --testPathPattern=\"tests/e2e/.*test*.\" --maxWorkers=50%",
     "test:integration": "cross-env NODE_ENV=test jest --testPathPattern=\"tests/integration/.*test*.\" --maxWorkers=50%",
     "test:unit": "cross-env NODE_ENV=test jest --testPathPattern=\"tests/unit/.*test*.\" --maxWorkers=50%",
