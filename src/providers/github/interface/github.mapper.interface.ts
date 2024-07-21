@@ -1,10 +1,17 @@
 import { IRepository } from '@app/common/interfaces';
 
-import { GitHubRepositoryType } from '../github.type';
+import {
+  GitHubRepositoryType,
+  GitHubRepositoryWebhookType,
+} from '../github.type';
 
 export interface IGitHubMapper {
+  extractNamesForActiveWebhooks(
+    webhooks: GitHubRepositoryWebhookType[],
+  ): string[];
   mapRepositoryDetail(
-    repository?: GitHubRepositoryType | null,
+    repository: GitHubRepositoryType | null,
+    activeWebhooks?: string[],
   ): IRepository | null;
   mapRepositoryList(repositories: GitHubRepositoryType[]): IRepository[];
 }

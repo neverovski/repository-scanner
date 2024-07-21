@@ -1,4 +1,4 @@
-type GitHubOwner = {
+type GitHubOwnerType = {
   avatar_url: string;
   events_url: string;
   followers_url: string;
@@ -19,18 +19,46 @@ type GitHubOwner = {
   url: string;
 };
 
-type GitHubPermission = {
+type GitHubPermissionType = {
   admin: boolean;
   pull: boolean;
   push: boolean;
 };
 
-type GitHubLicense = {
+type GitHubLicenseType = {
   html_url: string;
   key: string;
   name: string;
   node_id: string;
   spdx_id: string;
+  url: string;
+};
+
+type GitHubWebHookConfigType = {
+  content_type: string;
+  insecure_ssl: string;
+  url: string;
+};
+
+type GitHubWebHookLastResponseType = {
+  code: number | null;
+  message: string | null;
+  status: string | null;
+};
+
+export type GitHubRepositoryWebhookType = {
+  active: boolean;
+  config: GitHubWebHookConfigType;
+  created_at: string;
+  deliveries_url: string;
+  events: string[];
+  id: number;
+  last_response: GitHubWebHookLastResponseType;
+  name: string;
+  ping_url: string;
+  test_url: string;
+  type: string;
+  updated_at: string;
   url: string;
 };
 
@@ -85,7 +113,7 @@ export type GitHubRepositoryType = {
   labels_url: string;
   language: string | null;
   languages_url: string;
-  license: GitHubLicense;
+  license: GitHubLicenseType;
   merges_url: string;
   milestones_url: string;
   mirror_url: string;
@@ -95,8 +123,8 @@ export type GitHubRepositoryType = {
   notifications_url: string;
   open_issues: number;
   open_issues_count: number;
-  owner: GitHubOwner;
-  permissions: GitHubPermission;
+  owner: GitHubOwnerType;
+  permissions: GitHubPermissionType;
   private: boolean;
   pulls_url: string;
   pushed_at: string;

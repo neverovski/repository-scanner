@@ -1,8 +1,9 @@
 import { Inject } from '@nestjs/common';
 
+import { IRepository } from '@app/common/interfaces';
 import { GitHubInjectEnum, IGitHubService } from '@app/providers/github';
 
-import { IRepository, IRepositoryService } from './interface';
+import { IRepositoryService } from './interface';
 
 export class RepositoryService implements IRepositoryService {
   constructor(

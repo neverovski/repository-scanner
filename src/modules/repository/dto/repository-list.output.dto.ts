@@ -1,9 +1,11 @@
 import { Field, ObjectType } from '@nestjs/graphql';
 
-import { IRepository } from '../interface';
+import { IRepository } from '@app/common/interfaces';
 
 @ObjectType({ description: 'RepositoryList' })
-export class RepositoryListOutputDto implements IRepository {
+export class RepositoryListOutputDto
+  implements Omit<IRepository, 'private' | 'activeWebhooks'>
+{
   @Field()
   name!: NameType;
 

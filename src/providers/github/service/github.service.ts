@@ -10,9 +10,12 @@ import {
 } from '@app/providers/github/github.constant';
 import {
   GitHubInjectEnum,
-  GitHubPathEnum,
+  GitHubQueryEnum,
 } from '@app/providers/github/github.enum';
-import { GitHubRepositoryType } from '@app/providers/github/github.type';
+import {
+  GitHubRepositoryType,
+  GitHubRepositoryWebhookType,
+} from '@app/providers/github/github.type';
 
 import { IGitHubMapper, IGitHubService } from '../interface';
 
@@ -36,19 +39,22 @@ export class GitHubService extends HttpService implements IGitHubService {
   }
 
   async getRepositoryDetail(name: NameType) {
-    const urlPath = `${GitHubPathEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}`;
+    const urlPath = `${GitHubQueryEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}`;
 
     try {
-      const res = await this.getRequest<GitHubRepositoryType>(urlPath);
+      const [repository, webhooks] = await Promise.all([
+        this.getRequest<GitHubRepositoryType>(urlPath),
+        this.getActiveWebhooksForRepository(name),
+      ]);
 
-      return this.mapper.mapRepositoryDetail(res);
+      return this.mapper.mapRepositoryDetail(repository, webhooks);
     } catch {
       return null;
     }
   }
 
   async getRepositoryList() {
-    const urlPath = GitHubPathEnum.REPOSITORY_LIST;
+    const urlPath = GitHubQueryEnum.REPOSITORY_LIST;
 
     try {
       const res = await this.getRequest<GitHubRepositoryType[]>(urlPath);
@@ -59,7 +65,21 @@ export class GitHubService extends HttpService implements IGitHubService {
     }
   }
 
-  protected createUrl(path: string | GitHubPathEnum) {
+  protected createUrl(path: string | GitHubQueryEnum) {
     return `${this.gitHubConfig.url}/${path}`;
+  }
+
+  private async getActiveWebhooksForRepository(
+    name: NameType,
+  ): Promise<string[]> {
+    const urlPath = `${GitHubQueryEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}/${GitHubQueryEnum.REPOSITORY_HOOK}`;
+
+    try {
+      const res = await this.getRequest<GitHubRepositoryWebhookType[]>(urlPath);
+
+      return this.mapper.extractNamesForActiveWebhooks(res);
+    } catch {
+      return [];
+    }
   }
 }

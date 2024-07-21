@@ -3,7 +3,8 @@ export enum GitHubInjectEnum {
   SERVICE = 'GitHubService',
 }
 
-export enum GitHubPathEnum {
+export enum GitHubQueryEnum {
   REPOSITORY_DETAIL = 'repos',
-  REPOSITORY_LIST = 'user/repos',
+  REPOSITORY_HOOK = 'hooks',
+  REPOSITORY_LIST = 'user/repos?sort=created&affiliation=owner',
 }
