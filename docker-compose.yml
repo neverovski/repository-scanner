@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  scanner-server:
+    image: scanner-server
+    container_name: scanner-server
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+        APP_PORT: ${APP_PORT}
+    env_file: ./.env
+    ports:
+      - ${APP_PORT}:${APP_PORT}
+    networks:
+      - scanner-server
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 2GB
+    restart: unless-stopped
+
+networks:
+  scanner-server:
+    name: scanner-server
