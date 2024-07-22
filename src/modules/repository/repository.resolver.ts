@@ -3,11 +3,11 @@ import { Args, Query, Resolver } from '@nestjs/graphql';
 
 import { ResolverCore } from '@app/core';
 
-import { RepositoryDetailOutputDto, RepositoryListOutputDto } from './dto';
 import { IRepositoryService } from './interface';
+import { RepositoryDetailOutput, RepositoryListOutput } from './output';
 import { RepositoryInjectEnum } from './repository.enum';
 
-@Resolver(() => RepositoryListOutputDto)
+@Resolver(() => RepositoryListOutput)
 export class RepositoryResolver extends ResolverCore {
   constructor(
     @Inject(RepositoryInjectEnum.SERVICE)
@@ -16,7 +16,7 @@ export class RepositoryResolver extends ResolverCore {
     super();
   }
 
-  @Query(() => RepositoryDetailOutputDto)
+  @Query(() => RepositoryDetailOutput)
   async getRepositoryByName(
     @Args('name', { type: () => String }) name: NameType,
   ) {
@@ -25,7 +25,7 @@ export class RepositoryResolver extends ResolverCore {
     return this.getEntityOrNotFound(repository);
   }
 
-  @Query(() => [RepositoryListOutputDto])
+  @Query(() => [RepositoryListOutput])
   getRepositoryList() {
     return this.service.getList();
   }
