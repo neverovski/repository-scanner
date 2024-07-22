@@ -11,6 +11,7 @@ Development environment requirements:
 ```shell
   cp .env.example .env
 ```
+
 ### 2. Run Services with Docker Compose:
 ```shell
   docker compose up -d --build
@@ -20,6 +21,14 @@ Development environment requirements:
 ```shell
   npm run start
 ```
+
+## Accessing the Application
+
+The application is running a `GraphQL` endpoint that is accessible via the following URL:
+
+[http://127.0.0.1:5656/graphql](http://127.0.0.1:5656/graphql)
+
+Click the link to open it in your browser, or you can use your preferred HTTP client to start making requests.
 
 ## Notes
 ### 1. Enable Git hooks
