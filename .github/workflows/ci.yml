@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'docs/**'
+      - 'http/**'
+      - '*.md'
+
+  pull_request:
+    branches:
+        - develop
+        - main
+    paths-ignore:
+      - 'docs/**'
+      - 'http/**'
+      - '*.md'
+    types: [opened, synchronize, closed]
+
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  build-test:
+    if: (!(github.event.action == 'closed' && github.event.pull_request.merged != true))
+
+    name: ESLint & Unit test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: ESLint Check
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:unit:ci
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4  # upload test results
+        if: success() || failure()        # run this step even if previous step failed
+        with:
+          name: test-result-${{ matrix.node-version }}
+          path: reports/jest-*.xml
