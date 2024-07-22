@@ -1,11 +1,15 @@
 import { Inject } from '@nestjs/common';
+import pLimit from 'p-limit';
 
+import { CONCURRENCY_LIMIT } from '@app/common/constants';
 import { HeaderContentTypeEnum } from '@app/common/enums';
+import { IRepository } from '@app/common/interfaces';
 import { GitHubConfigType } from '@app/common/types';
 import { GitHubConfig } from '@app/config';
 import { HttpService } from '@app/core/service';
 import {
   API_VERSION_GITHUB,
+  CONTENT_RESPONSE_DEFAULT_GITHUB,
   TOKEN_KEY_GITHUB,
 } from '@app/providers/github/github.constant';
 import {
@@ -13,6 +17,7 @@ import {
   GitHubQueryEnum,
 } from '@app/providers/github/github.enum';
 import {
+  GitHubRepositoryContentType,
   GitHubRepositoryType,
   GitHubRepositoryWebhookType,
 } from '@app/providers/github/github.type';
@@ -20,6 +25,8 @@ import {
 import { IGitHubMapper, IGitHubService } from '../interface';
 
 export class GitHubService extends HttpService implements IGitHubService {
+  private readonly limit: pLimit.Limit = pLimit(5);
+
   constructor(
     @Inject(GitHubConfig.KEY)
     private readonly gitHubConfig: GitHubConfigType,
@@ -28,6 +35,8 @@ export class GitHubService extends HttpService implements IGitHubService {
     private readonly mapper: IGitHubMapper,
   ) {
     super();
+
+    this.limit = pLimit(CONCURRENCY_LIMIT);
   }
 
   protected get headers() {
@@ -38,22 +47,25 @@ export class GitHubService extends HttpService implements IGitHubService {
     };
   }
 
-  async getRepositoryDetail(name: NameType) {
-    const urlPath = `${GitHubQueryEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}`;
-
+  async getRepositoryDetail(name: NameType): Promise<IRepository | null> {
     try {
-      const [repository, webhooks] = await Promise.all([
-        this.getRequest<GitHubRepositoryType>(urlPath),
-        this.getActiveWebhooksForRepository(name),
+      const [repository, activeWebhooks, content] = await Promise.all([
+        this.limit(() => this.getRepository(name)),
+        this.limit(() => this.getActiveWebhooksForRepository(name)),
+        this.limit(() => this.getCountFilesAndGetYmlUrlForRepository(name)),
       ]);
 
-      return this.mapper.mapRepositoryDetail(repository, webhooks);
+      if (!repository) {
+        return null;
+      }
+
+      return { ...repository, ...content, activeWebhooks };
     } catch {
       return null;
     }
   }
 
-  async getRepositoryList() {
+  async getRepositoryList(): Promise<IRepository[]> {
     const urlPath = GitHubQueryEnum.REPOSITORY_LIST;
 
     try {
@@ -80,6 +92,33 @@ export class GitHubService extends HttpService implements IGitHubService {
       return this.mapper.extractNamesForActiveWebhooks(res);
     } catch {
       return [];
+    }
+  }
+
+  //TODO: I'm only using the top level, for deep scanning we need to use a tree https://docs.github.com/en/rest/git/trees?apiVersion=2022-11-28#get-a-tree
+  private async getCountFilesAndGetYmlUrlForRepository(
+    name: NameType,
+  ): Promise<Pick<IRepository, 'countFiles' | 'ymlUrl'>> {
+    const urlPath = `${GitHubQueryEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}/${GitHubQueryEnum.REPOSITORY_CONTENT}`;
+
+    try {
+      const res = await this.getRequest<GitHubRepositoryContentType[]>(urlPath);
+
+      return this.mapper.countFilesAndGetYmlUrlFromRepositoryContent(res);
+    } catch {
+      return CONTENT_RESPONSE_DEFAULT_GITHUB;
+    }
+  }
+
+  private async getRepository(name: NameType) {
+    const urlPath = `${GitHubQueryEnum.REPOSITORY_DETAIL}/${this.gitHubConfig.userName}/${name}`;
+
+    try {
+      const res = await this.getRequest<GitHubRepositoryType>(urlPath);
+
+      return this.mapper.mapRepository(res);
+    } catch {
+      return null;
     }
   }
 }

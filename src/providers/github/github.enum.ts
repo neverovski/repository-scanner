@@ -4,6 +4,7 @@ export enum GitHubInjectEnum {
 }
 
 export enum GitHubQueryEnum {
+  REPOSITORY_CONTENT = 'contents',
   REPOSITORY_DETAIL = 'repos',
   REPOSITORY_HOOK = 'hooks',
   REPOSITORY_LIST = 'user/repos?sort=created&affiliation=owner',

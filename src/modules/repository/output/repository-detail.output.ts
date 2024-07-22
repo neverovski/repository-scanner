@@ -8,6 +8,9 @@ export class RepositoryDetailOutput implements IRepository {
   activeWebhooks!: string[];
 
   @Field()
+  countFiles!: number;
+
+  @Field()
   name!: NameType;
 
   @Field()
@@ -18,4 +21,7 @@ export class RepositoryDetailOutput implements IRepository {
 
   @Field()
   size!: number;
+
+  @Field()
+  ymlUrl!: string;
 }

@@ -62,6 +62,18 @@ export type GitHubRepositoryWebhookType = {
   url: string;
 };
 
+export type GitHubRepositoryContentType = {
+  download_url: string;
+  git_url: string;
+  html_url: string;
+  name: string;
+  path: string;
+  sha: string;
+  size: number;
+  type: 'file' | 'dir';
+  url: string;
+};
+
 export type GitHubRepositoryType = {
   allow_auto_merge: boolean;
   allow_merge_commit: boolean;
