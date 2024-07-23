@@ -63,7 +63,7 @@ jobs:
         run: npm run lint
 
       - name: Run unit tests
-        run: npm run test:unit:ci
+        run: npm run test:unit
 
       - name: Upload test results
         uses: actions/upload-artifact@v4  # upload test results
