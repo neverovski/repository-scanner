@@ -25,7 +25,7 @@ import {
 import { IGitHubMapper, IGitHubService } from '../interface';
 
 export class GitHubService extends HttpService implements IGitHubService {
-  private readonly limit: pLimit.Limit = pLimit(5);
+  private readonly limit: pLimit.Limit;
 
   constructor(
     @Inject(GitHubConfig.KEY)
