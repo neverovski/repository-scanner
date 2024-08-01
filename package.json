@@ -37,7 +37,7 @@
   },
   "homepage": "https://github.com/neverovski/repository-scanner#readme",
   "dependencies": {
-    "@apollo/server": "^4.10.4",
+    "@apollo/server": "^4.10.5",
     "@nestjs/apollo": "^12.2.0",
     "@nestjs/common": "^10.3.10",
     "@nestjs/config": "^3.2.3",
